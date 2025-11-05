@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
-
+from django.shortcuts import render
 
 class UserLoginView(LoginView):
     """
@@ -29,3 +29,7 @@ class UserLoginView(LoginView):
         """
         messages.error(self.request, "Invalid username or password. Please try again.")
         return super().form_invalid(form)
+
+
+def profile(request):
+    return render(request, "profile.html")
