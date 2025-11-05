@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 APPS = [
     # local apps
     'accounts.apps.AccountsConfig',
+    'blogs.apps.BlogsConfig'
 ]
 
 THIRD_PARTY_APPS = [
