@@ -59,12 +59,12 @@ class ReaderProfile(models.Model):
         related_name="readerprofile"
     )
     subscribed = models.BooleanField(default=False, help_text="Whether the user is subscribed to the newsletter.")
-    # favorite_posts = models.ManyToManyField(
-    #     "blog.Post",
-    #     related_name="favorited_by",
-    #     blank=True,
-    #     help_text="Posts this reader marked as favorite."
-    # )
+    favorite_posts = models.ManyToManyField(
+        "blogs.Post",
+        related_name="favorited_by",
+        blank=True,
+        help_text="Posts this reader marked as favorite."
+    )
 
     def __str__(self):
         return f"Reader: {self.user.username}"

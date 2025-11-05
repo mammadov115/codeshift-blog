@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
-from accounts.models import AuthorProfile
+from accounts.models import AuthorProfile, User
 
 
 class Category(models.Model):
@@ -109,12 +109,6 @@ class Post(models.Model):
     def total_reactions(self):
         """Returns total number of likes and dislikes."""
         return self.likes + self.dislikes
-
-
-from django.db import models
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 
 class Comment(models.Model):
