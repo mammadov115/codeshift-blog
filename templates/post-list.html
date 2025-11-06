@@ -186,6 +186,10 @@
                       <h6 class="card-title{% if post.status == "draft" %} text-danger{% else %} text-success{% endif %}">{{ post.status| capfirst }}</h6>
                       <p class="card-text">{{ post.content|truncatechars:100 }}</p>
                       <a href="{% url "post-update" slug=post.slug %}" class="btn btn-primary">Edit</a>
+                      <form action="{% url 'post-delete' slug=post.slug %}" method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <button href="{% url "post-delete" slug=post.slug %}" class="btn btn-danger" >Delete</button>
+                      </form>
                     </div>
                   </div>
 

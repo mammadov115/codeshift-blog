@@ -206,7 +206,7 @@ class PostUpdateView(LoginRequiredMixin, View):
 
         post.save()
 
-        return redirect("post-update", slug=post.slug)
+        return redirect("post-list")
 
 
 class PostDeleteView(LoginRequiredMixin, View):
