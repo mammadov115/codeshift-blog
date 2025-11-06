@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from accounts.models import User, AuthorProfile, ReaderProfile
 from .forms import CustomUserCreationForm
 from django.views.generic import CreateView
@@ -68,7 +68,6 @@ class UserRegisterView(CreateView):
             ReaderProfile.objects.create(user=user)
             
         login(self.request, user)
-        messages.success(self.request, f"Welcome, {user.username}! Your account has been created successfully.")
         return response
 
     def form_invalid(self, form):
@@ -89,7 +88,6 @@ class UserRegisterView(CreateView):
                     messages.error(self.request, f"{field.capitalize()}: {error}")
         return super().form_invalid(form)
     
-
 
 class UserProfileView(LoginRequiredMixin, View):
     """
@@ -122,4 +120,67 @@ class UserProfileView(LoginRequiredMixin, View):
         }
         return render(request, self.template_name, context)
     
+    def post(self, request, *args, **kwargs):
+        """
+        Update base User model and related profile (Author/Reader).
+        """
+        user = request.user
 
+        # --- Update User model fields ---
+        user.first_name = request.POST.get("first_name", "").strip()
+        user.last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        user.username = request.POST.get("username", "").strip()
+
+
+        if not email:
+            messages.error(request, "Email cannot be empty.")
+            return redirect("profile")
+
+        user.email = email
+        user.save()
+
+        # --- Update profile based on user type ---
+        if hasattr(user, "authorprofile"):
+            author_profile = user.authorprofile
+            author_profile.bio = request.POST.get("bio", "").strip()
+            print(author_profile.website)
+            author_profile.website = request.POST.get("website", "").strip()
+            if "profile_image" in request.FILES:
+                author_profile.profile_image = request.FILES["profile_image"]
+
+            author_profile.save()
+
+        elif hasattr(user, "readerprofile"):
+            reader_profile = user.readerprofile
+            subscribed = request.POST.get("subscribed") == "on"
+            reader_profile.subscribed = subscribed
+
+            if "profile_image" in request.FILES:
+                reader_profile.profile_image = request.FILES["profile_image"]
+
+            reader_profile.save()
+
+        messages.success(request, "Your profile information has been updated successfully.")
+        return redirect("profile")
+
+
+class LogoutView(LoginRequiredMixin, View):
+    """
+    Log out the currently authenticated user
+    and redirect them to the login page.
+    """
+    print("hello    ")
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST request to log out the user.
+        """
+        logout(request)
+        return redirect("home")
+
+    def get(self, request, *args, **kwargs):
+        """
+        Optionally handle GET requests (for safety, redirect instead of logging out).
+        """
+        return redirect("home")

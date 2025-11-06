@@ -113,6 +113,8 @@ class ReaderProfile(models.Model):
         blank=True,
         help_text="Posts this reader marked as favorite."
     )
+    profile_image = models.ImageField(upload_to="readers/", blank=True, null=True)
+
 
     def __str__(self):
         return f"Reader: {self.user.username}"
