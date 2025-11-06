@@ -23,23 +23,6 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
-class Tag(models.Model):
-    """Represents a tag that can be assigned to posts."""
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=70, unique=True, blank=True)
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        """Generate slug automatically if not provided."""
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
 
 class Post(models.Model):
     """Core blog post model representing an article."""
@@ -70,7 +53,6 @@ class Post(models.Model):
         null=True,
         related_name="posts"
     )
-    tags = models.ManyToManyField(Tag, blank=True, related_name="posts", null=True)
 
     views_count = models.PositiveIntegerField(default=0)
 
@@ -104,10 +86,6 @@ class Post(models.Model):
         """Increase the view count each time the post is viewed."""
         self.views_count = models.F("views_count") + 1
         self.save(update_fields=["views_count"])
-
-    def total_reactions(self):
-        """Returns total number of likes and dislikes."""
-        return self.likes + self.dislikes
     
     def total_comments(self):
         """

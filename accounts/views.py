@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from accounts.models import User, AuthorProfile, ReaderProfile
@@ -97,9 +97,21 @@ class UserProfileView(LoginRequiredMixin, View):
 
     template_name = "profile.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse("login")) 
+        
+        if request.user.is_authenticated and request.user.is_superuser:
+            return redirect(reverse("admin:index"))
+        
+        return super().dispatch(request, *args, **kwargs)
+
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
+
+        
         # Try to get AuthorProfile or ReaderProfile
         author_profile = getattr(user, "authorprofile", None)
         reader_profile = getattr(user, "readerprofile", None)

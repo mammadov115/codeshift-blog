@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Tag, Post, Comment
+from .models import Category, Post, Comment
 
 
 @admin.register(Category)
@@ -14,16 +14,7 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ("name",)
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    """
-    Admin configuration for tags.
-    Tags are used for flexible post labeling and filtering.
-    """
-    list_display = ("name", "slug")
-    search_fields = ("name",)
-    prepopulated_fields = {"slug": ("name",)}
-    ordering = ("name",)
+
 
 
 class CommentInline(admin.TabularInline):
@@ -45,17 +36,17 @@ class PostAdmin(admin.ModelAdmin):
     Provides filtering, search, and inline comment management.
     """
     list_display = ("title", "author", "status", "category", "views_count")
-    list_filter = ("status", "category", "tags", "created_at")
+    list_filter = ("status", "category", "created_at")
     search_fields = ("title", "content", "author__user__username")
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ("author", "category", "tags")
+    autocomplete_fields = ("author", "category")
     inlines = [CommentInline]
     readonly_fields = ("views_count", "published_at" , "created_at", "updated_at")
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
 
     fieldsets = (
-        ("Post Info", {"fields": ("title", "slug", "author", "status", "category", "tags")}),
+        ("Post Info", {"fields": ("title", "slug", "author", "status", "category")}),
         ("Content", {"fields": ("content", "cover_image")}),
         ("Statistics", {"fields": ("views_count", )}),
         ("Timestamps", {"fields": ("created_at", "published_at")}),

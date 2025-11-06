@@ -4,9 +4,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.utils.text import slugify
-from .models import Post, Category, Tag, Comment
+from .models import Post, Category, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .utils import search_posts
+from django.views.generic import TemplateView
+
 
 
 # Create your views here.
@@ -24,7 +26,6 @@ class AllPostsView(View):
         posts_queryset = (
             Post.objects.all()
             .select_related("author", "category")
-            .prefetch_related("tags")
         )
 
         search_query = request.GET.get("query", "").strip()
@@ -68,7 +69,7 @@ class PostListView(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         author_profile = getattr(user, "authorprofile", None)
-        posts = Post.objects.filter(author=author_profile).select_related("author", "category").prefetch_related("tags")
+        posts = Post.objects.filter(author=author_profile).select_related("author", "category")
         return render(request, self.template_name, {"posts": posts})
 
 
@@ -131,8 +132,7 @@ class PostCreateView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
-        tags = Tag.objects.all()
-        return render(request, self.template_name, {"categories": categories, "tags": tags})
+        return render(request, self.template_name, {"categories": categories,})
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -184,9 +184,8 @@ class PostUpdateView(LoginRequiredMixin, View):
             return redirect("post-list")
 
         categories = Category.objects.all()
-        tags = Tag.objects.all()
 
-        return render(request, self.template_name, {"post": post, "categories": categories, "tags": tags})
+        return render(request, self.template_name, {"post": post, "categories": categories,})
 
     def post(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
@@ -205,9 +204,7 @@ class PostUpdateView(LoginRequiredMixin, View):
         if cover_image:
             post.cover_image = cover_image
 
-        tag_ids = request.POST.getlist("tags")
         post.save()
-        post.tags.set(tag_ids)
 
         return redirect("post-update", slug=post.slug)
 
@@ -225,3 +222,27 @@ class PostDeleteView(LoginRequiredMixin, View):
 
         post.delete()
         return redirect("post-list")
+    
+
+
+
+class AboutView(TemplateView):
+    """
+    Display the 'About' page of the blog.
+
+    This page contains static information about the blog,
+    its purpose, and the team or author behind it.
+    """
+
+    template_name = "about.html"
+
+
+class ContactView(TemplateView):
+    """
+    Display the 'Contact' page of the blog.
+
+    """
+
+    template_name = "contact.html"
+
+

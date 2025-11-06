@@ -1,0 +1,38 @@
+        <nav class="tm-nav" id="tm-nav">
+          <ul>
+            <li class="tm-nav-item {% if request.path == '/' %}active{% endif %}">
+              <a href="{% url "home" %}" class="tm-nav-link ">
+                <i class="fas fa-home"></i>
+                Blog Home
+              </a>
+            </li>
+            {% if user.is_authenticated %}
+              <li class="tm-nav-item">
+                <a href="{% url "profile" %}" class="tm-nav-link">
+                  <i class="fas fa-user"></i>
+                  Your Profile
+                </a>
+              </li>
+            {% else %}
+                <li class="tm-nav-item">
+                <a href="{% url 'login' %}" class="tm-nav-link">
+                    <i class="fas fa-user"></i>
+                    Log in
+                </a>
+            </li>            
+            {% endif %}
+
+            <li class="tm-nav-item {% if request.path == '/about/' %}active{% endif %}">
+              <a href="{% url "about" %}" class="tm-nav-link ">
+                <i class="fas fa-users"></i>
+                About Xtra
+              </a>
+            </li>
+            <li class="tm-nav-item {% if request.path == '/contact/' %}active{% endif %}"">
+              <a href="{% url "contact" %}" class="tm-nav-link">
+                <i class="far fa-comments"></i>
+                Contact Us
+              </a>
+            </li>
+          </ul>
+        </nav>
