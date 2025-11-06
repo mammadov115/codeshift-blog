@@ -11,12 +11,6 @@ from .models import Post, Category, Tag
 def index(request):
     return render(request, 'index.html')
 
-def create_post(request):
-    return render(request, "create-post.html")
-
-
-
-
 
 class PostListView(View):
     """
@@ -51,7 +45,7 @@ class PostCreateView(LoginRequiredMixin, View):
     Allow authors to create a new blog post.
     """
 
-    template_name = "posts/post_form.html"
+    template_name = "create-post.html"
 
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
@@ -72,6 +66,10 @@ class PostCreateView(LoginRequiredMixin, View):
         category_id = request.POST.get("category")
         tag_ids = request.POST.getlist("tags")
 
+        cover_image = request.FILES.get("cover_image")
+        if cover_image:
+            post.cover_image = cover_image
+
         # Basic validation
         if not title or not content:
             messages.error(request, "Title and content cannot be empty.")
@@ -90,11 +88,13 @@ class PostCreateView(LoginRequiredMixin, View):
             status=status,
         )
 
+        print(post)
+
         if tag_ids:
             post.tags.set(tag_ids)
 
         messages.success(request, "Post created successfully.")
-        return redirect("post-detail", slug=post.slug)
+        return redirect("profile")
 
 
 class PostUpdateView(LoginRequiredMixin, View):

@@ -70,7 +70,7 @@ class Post(models.Model):
         null=True,
         related_name="posts"
     )
-    tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
+    tags = models.ManyToManyField(Tag, blank=True, related_name="posts", null=True)
 
     views_count = models.PositiveIntegerField(default=0)
     likes = models.PositiveIntegerField(default=0)

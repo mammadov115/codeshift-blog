@@ -73,6 +73,16 @@ class User(AbstractUser):
         """Check if this user has a reader profile."""
         return hasattr(self, "readerprofile")
     
+    @property
+    def get_profile_image(self):
+        """Return user's profile image URL, regardless of whether they're author or reader."""
+        if hasattr(self, "authorprofile") and self.authorprofile.profile_image:
+            return self.authorprofile.profile_image.url
+        elif hasattr(self, "readerprofile") and getattr(self.readerprofile, "profile_image", None):
+            return self.readerprofile.profile_image.url
+        return "/static/images/default_profile.png"  # fallback image
+
+    
 
 class AuthorProfile(models.Model):
     """
@@ -93,6 +103,8 @@ class AuthorProfile(models.Model):
 
     def __str__(self):
         return f"Author: {self.user.username}"
+    
+    
 
 
 class ReaderProfile(models.Model):
