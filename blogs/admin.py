@@ -44,20 +44,20 @@ class PostAdmin(admin.ModelAdmin):
     Admin configuration for blog posts.
     Provides filtering, search, and inline comment management.
     """
-    list_display = ("title", "author", "status", "category", "views_count", "likes", "dislikes")
+    list_display = ("title", "author", "status", "category", "views_count")
     list_filter = ("status", "category", "tags", "created_at")
     search_fields = ("title", "content", "author__user__username")
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ("author", "category", "tags")
     inlines = [CommentInline]
-    readonly_fields = ("views_count", "likes", "dislikes", "published_at" , "created_at", "updated_at")
+    readonly_fields = ("views_count", "published_at" , "created_at", "updated_at")
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
 
     fieldsets = (
         ("Post Info", {"fields": ("title", "slug", "author", "status", "category", "tags")}),
         ("Content", {"fields": ("content", "cover_image")}),
-        ("Statistics", {"fields": ("views_count", "likes", "dislikes")}),
+        ("Statistics", {"fields": ("views_count", )}),
         ("Timestamps", {"fields": ("created_at", "published_at")}),
     )
 

@@ -28,7 +28,7 @@ https://templatemo.com/tm-553-xtra-blog
             </div>
             <nav class="tm-nav" id="tm-nav">            
                 <ul>
-                    <li class="tm-nav-item"><a href="index.html" class="tm-nav-link">
+                    <li class="tm-nav-item"><a href="{% url "home" %}" class="tm-nav-link">
                         <i class="fas fa-home"></i>
                         Blog Home
                     </a></li>
@@ -212,24 +212,14 @@ https://templatemo.com/tm-553-xtra-blog
                             </ul>
                         <hr class="mb-3 tm-hr-primary">
                         <h2 class="tm-mb-40 tm-post-title tm-color-primary">Related Posts</h2>
-                        <a href="#" class="d-block tm-mb-40">
-                            <figure>
-                                <img src="/static/img/img-02.jpg" alt="Image" class="mb-3 img-fluid">
-                                <figcaption class="tm-color-primary">Duis mollis diam nec ex viverra scelerisque a sit</figcaption>
-                            </figure>
-                        </a>
-                        <a href="#" class="d-block tm-mb-40">
-                            <figure>
-                                <img src="/static/img/img-05.jpg" alt="Image" class="mb-3 img-fluid">
-                                <figcaption class="tm-color-primary">Integer quis lectus eget justo ullamcorper ullamcorper</figcaption>
-                            </figure>
-                        </a>
-                        <a href="#" class="d-block tm-mb-40">
-                            <figure>
-                                <img src="/static/img/img-06.jpg" alt="Image" class="mb-3 img-fluid">
-                                <figcaption class="tm-color-primary">Nam lobortis nunc sed faucibus commodo</figcaption>
-                            </figure>
-                        </a>
+                        {% for rp in related_posts %}
+                            <a href="{% url "post-detail" slug=rp.slug %}" class="d-block tm-mb-40">
+                                <figure>
+                                    <img src="{% if rp.cover_image %}{{ rp.cover_image.url }}{% endif %}" alt="Image" class="mb-3 img-fluid">
+                                    <figcaption class="tm-color-primary">{{ rp.content | truncatechars:20 }}</figcaption>
+                                </figure>
+                            </a>
+                        {% endfor %}
                     </div>                    
                 </aside>
             </div>

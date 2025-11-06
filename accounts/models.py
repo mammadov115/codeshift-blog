@@ -82,7 +82,6 @@ class User(AbstractUser):
             return self.readerprofile.profile_image.url
         return "/static/images/default_profile.png"  # fallback image
 
-    
 
 class AuthorProfile(models.Model):
     """
@@ -105,8 +104,6 @@ class AuthorProfile(models.Model):
         return f"Author: {self.user.username}"
     
     
-
-
 class ReaderProfile(models.Model):
     """
     Profile for normal readers.
@@ -119,14 +116,7 @@ class ReaderProfile(models.Model):
         related_name="readerprofile"
     )
     subscribed = models.BooleanField(default=False, help_text="Whether the user is subscribed to the newsletter.")
-    favorite_posts = models.ManyToManyField(
-        "blogs.Post",
-        related_name="favorited_by",
-        blank=True,
-        help_text="Posts this reader marked as favorite."
-    )
     profile_image = models.ImageField(upload_to="readers/", blank=True, null=True)
-
 
     def __str__(self):
         return f"Reader: {self.user.username}"

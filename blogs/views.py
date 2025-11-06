@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.utils.text import slugify
 from .models import Post, Category, Tag, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .utils import search_posts
+
 
 # Create your views here.
 
@@ -25,9 +27,15 @@ class AllPostsView(View):
             .prefetch_related("tags")
         )
 
+        search_query = request.GET.get("query", "").strip()
         category_id = request.GET.get("category")
+
         if category_id:
             posts_queryset = posts_queryset.filter(category__id=category_id)
+
+        # Apply search filter if a query is present
+        if search_query:
+            posts_queryset = search_posts(search_query)
 
         # Set up pagination
         page = request.GET.get("page", 1)
@@ -44,6 +52,7 @@ class AllPostsView(View):
 
         context = {
             "posts": posts,
+            "search_query": search_query,
         }
 
         return render(request, self.template_name, context)
@@ -73,11 +82,17 @@ class PostDetailView(View):
     def get(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug, status=Post.Status.PUBLISHED)
         categories = Category.objects.all()
+        related_posts = Post.objects.filter(category=post.category).exclude(id=post.id).distinct()[:4]
+
+        search_query = request.GET.get("query", "").strip()
+        if search_query:
+            return redirect(f"/?query={search_query}")
+
 
         # Increment view counter
         post.increment_views()
 
-        return render(request, self.template_name, {"post": post, "categories": categories})
+        return render(request, self.template_name, {"post": post, "categories": categories, "related_posts":related_posts})
     
     def post(self, request, slug, *args, **kwargs):
         """Handle new comment submissions."""

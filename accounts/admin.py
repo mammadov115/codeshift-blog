@@ -51,26 +51,20 @@ class AuthorProfileAdmin(admin.ModelAdmin):
     ordering = ("-verified", "user__username")
 
 
-
-
 @admin.register(ReaderProfile)
 class ReaderProfileAdmin(admin.ModelAdmin):
     """
     Admin configuration for readers.
-    Displays subscription status and favorite post count.
+    Displays subscription status .
     """
 
-    list_display = ("user", "subscribed", "favorite_count")
+    list_display = ("user", "subscribed",)
     list_filter = ("subscribed",)
     search_fields = ("user__username", "user__email")
-    filter_horizontal = ("favorite_posts",)
 
 
-    def favorite_count(self, obj):
-        """Show number of favorite posts in the admin list view."""
-        return obj.favorite_posts.count()
 
-    favorite_count.short_description = "Favorites"
+
 
 
 
