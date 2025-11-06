@@ -109,6 +109,12 @@ class Post(models.Model):
     def total_reactions(self):
         """Returns total number of likes and dislikes."""
         return self.likes + self.dislikes
+    
+    def total_comments(self):
+        """
+        Return total number of comments including replies.
+        """
+        return self.comments.count()
 
 
 class Comment(models.Model):

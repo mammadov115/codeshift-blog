@@ -10,7 +10,7 @@
   </head>
 
   <body id="page-top">
-
+    <div>
       <div id="wrapper">
         <nav class="navbar align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 navbar-dark">
           <div class="container-fluid d-flex flex-column p-0">
@@ -31,14 +31,14 @@
                 <a class="nav-link" href="{% url "profile" %}"><i class="fas fa-user"></i><span>Profile</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="{% url "post-create" %}"><i class="fas fa-table"></i><span>Create Article</span></a>
-              </li>
-              {% comment %} <li class="nav-item">
-                <a class="nav-link" href="login.html"><i class="far fa-user-circle"></i><span>Login</span></a>
+                <a class="nav-link " href="{% url "post-create" %}"><i class="fas fa-table"></i><span>Create Article</span></a>
               </li>
               <li class="nav-item">
+                <a class="nav-link active" href="{% url "post-list" %}"><i class="far fa-user-circle"></i><span>All posts</span></a>
+              </li>
+              {% comment %} <li class="nav-item">
                 <a class="nav-link" href="register.html"><i class="fas fa-user-circle"></i><span>Register</span></a>
-              </li>  {% endcomment %}
+              </li> {% endcomment %}
             </ul>
             <div class="text-center d-none d-md-inline">
               <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button>
@@ -174,51 +174,25 @@
                 </ul>
               </div>
             </nav>
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+
             <div class="container-fluid">
-              <h3 class="text-dark mb-4">Create Post</h3>
+              <h3 class="text-dark mb-4">All Posts</h3>
+              <div class="row">
+                {% for post in posts %}
+                  <div class="card" style="width: 18rem;">
+                    <img src="{% if post.cover_image %}{{ post.cover_image.url }}{% endif %}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h4 class="card-title">{{ post.title }}</h4>
+                      <h6 class="card-title{% if post.status == "draft" %} text-danger{% else %} text-success{% endif %}">{{ post.status| capfirst }}</h6>
+                      <p class="card-text">{{ post.content|truncatechars:100 }}</p>
+                      <a href="{% url "post-update" slug=post.slug %}" class="btn btn-primary">Edit</a>
+                    </div>
+                  </div>
 
-              <div class="mb-3">
-                <label for="titlle" class="form-label">Title</label>
-                <input type="text" class="form-control" id="title" placeholder="Post title" name="title">
+                {% endfor %}
               </div>
 
-              <div class="mb-3">
-                <label for="content" class="form-label">Content</label>
-                <textarea class="form-control" id="content" rows="3" name="content"></textarea>
-              </div>
-
-              <div class="mb-3">
-                <label for="cover_image" class="form-label">Cover image</label>
-                <input class="form-control" type="file" id="cover_image" >
-              </div>
-
-              <div class="mb-3">
-                <label for="status" class="form-label">Post status</label>
-                <select class="form-select" aria-label="Post status" id='status' name="status">
-                  <option value="draft" selected>Draft</option>
-                  <option value="published">Published</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="category" class="form-label">Category</label>
-                <select class="form-select" aria-label="Post status" id='category'>
-                  <option value="A" selected>A</option>
-                  <option value="A">B</option>
-                </select>
-              </div>
-
-              <div class="d-grid gap-2">
-              <button class="btn btn-primary" type="submit" >Save</button>
-
-
-              
-          </form>
-
-    </div>
-          </div>
+            </div>
         </div>
         <footer class="bg-white sticky-footer">
           <div class="container my-auto">
