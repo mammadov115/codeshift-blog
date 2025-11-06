@@ -33,15 +33,29 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(username, email, password, **extra_fields)
 
+
 class User(AbstractUser):
     """
     Base user model that handles authentication and shared user info.
     Separate profile models (AuthorProfile, ReaderProfile) extend this base.
     """
 
+    ROLE_CHOICES = [
+        ("author", "Author"),
+        ("reader", "Reader"),
+    ]
+
     # Common fields for all users
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # User type (role)
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="reader",
+        help_text="Defines the user's role: Author or Reader."
+    )
 
     # Attach the custom manager
     objects = CustomUserManager()
@@ -102,3 +116,5 @@ class ReaderProfile(models.Model):
 
     def __str__(self):
         return f"Reader: {self.user.username}"
+
+

@@ -1,9 +1,8 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import render
 from django.contrib.auth import login
-from accounts.models import User
+from accounts.models import User, AuthorProfile, ReaderProfile
 from .forms import CustomUserCreationForm
 from django.views.generic import CreateView
 
@@ -52,7 +51,17 @@ class UserRegisterView(CreateView):
         Creates the user, logs them in, and displays a success message.
         """
         response = super().form_valid(form)
-        user = form.save()
+        user = form.save(commit=False)
+        user.is_staff = True
+        role = form.data.get("role")  # Expecting a 'role' field in the form
+        user.save()
+
+        # Create the corresponding profile based on role
+        if role == "author":
+            AuthorProfile.objects.create(user=user)
+        elif role == "reader":
+            ReaderProfile.objects.create(user=user)
+            
         login(self.request, user)
         messages.success(self.request, f"Welcome, {user.username}! Your account has been created successfully.")
         return response

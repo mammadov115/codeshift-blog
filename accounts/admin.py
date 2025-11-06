@@ -63,8 +63,18 @@ class ReaderProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "user__email")
     filter_horizontal = ("favorite_posts",)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(pk=request.user.pk)  # only own user
+
     def favorite_count(self, obj):
         """Show number of favorite posts in the admin list view."""
         return obj.favorite_posts.count()
 
     favorite_count.short_description = "Favorites"
+
+
+
+
