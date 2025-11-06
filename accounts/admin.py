@@ -11,7 +11,7 @@ class UserAdmin(BaseUserAdmin):
     """
 
     # Fields to display in the list view
-    list_display = ("username", "email", "is_staff", "is_active", "created_at", "is_author", "is_reader")
+    list_display = ("username", "email", "is_staff", "is_active", "created_at", "role")
     list_filter = ("is_staff", "is_active", "date_joined")
     search_fields = ("username", "email")
     ordering = ("-created_at",)
@@ -51,6 +51,8 @@ class AuthorProfileAdmin(admin.ModelAdmin):
     ordering = ("-verified", "user__username")
 
 
+
+
 @admin.register(ReaderProfile)
 class ReaderProfileAdmin(admin.ModelAdmin):
     """
@@ -63,11 +65,6 @@ class ReaderProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "user__email")
     filter_horizontal = ("favorite_posts",)
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(pk=request.user.pk)  # only own user
 
     def favorite_count(self, obj):
         """Show number of favorite posts in the admin list view."""

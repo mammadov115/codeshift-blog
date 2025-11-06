@@ -5,6 +5,11 @@ from django.contrib.auth import login
 from accounts.models import User, AuthorProfile, ReaderProfile
 from .forms import CustomUserCreationForm
 from django.views.generic import CreateView
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from django.http import Http404
+
 
 class UserLoginView(LoginView):
     """
@@ -43,7 +48,7 @@ class UserRegisterView(CreateView):
     model = User
     form_class = CustomUserCreationForm
     template_name = "signup.html"
-    success_url = reverse_lazy("home")  # Redirect after successful signup
+    success_url = reverse_lazy("profile")  # Redirect after successful signup
 
     def form_valid(self, form):
         """
@@ -83,3 +88,38 @@ class UserRegisterView(CreateView):
                     # Field-specific errors
                     messages.error(self.request, f"{field.capitalize()}: {error}")
         return super().form_invalid(form)
+    
+
+
+class UserProfileView(LoginRequiredMixin, View):
+    """
+    Display the profile page for the logged-in user.
+    Automatically detects if the user is an Author or a Reader.
+    """
+
+    template_name = "profile.html"
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        # Try to get AuthorProfile or ReaderProfile
+        author_profile = getattr(user, "authorprofile", None)
+        reader_profile = getattr(user, "readerprofile", None)
+
+        if author_profile:
+            profile = author_profile
+            user_type = "author"
+        elif reader_profile:
+            profile = reader_profile
+            user_type = "reader"
+        else:
+            # User has no profile (shouldn't happen unless data is inconsistent)
+            raise Http404("No profile found for this user.")
+
+        context = {
+            "profile": profile,
+            "user_type": user_type,
+        }
+        return render(request, self.template_name, context)
+    
+
