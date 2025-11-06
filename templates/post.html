@@ -118,11 +118,11 @@ https://templatemo.com/tm-553-xtra-blog
                                 {% if comment.is_parent %}
                                     <div class="tm-comment tm-mb-45">
                                         <figure class="tm-comment-figure">
-                                            {% if comment.user.authorprofile.profile_image %}
-                                                <img src="{{ comment.user.authorprofile.profile_image.url }}" width="100" height="100" alt="Image" class="mb-2 rounded-circle img-thumbnail">
-                                            {% else %}
+                                            {% comment %} {% if comment.user.authorprofile.profile_image %} {% endcomment %}
+                                                <img src="{{ comment.user.get_profile_image }}" width="100" height="100" alt="Image" class="mb-2 rounded-circle img-thumbnail">
+                                            {% comment %} {% else %}
                                                 <img src="/static/img/comment-1.jpg" alt="Image" class="mb-2 rounded-circle img-thumbnail">
-                                            {% endif %}
+                                            {% endif %} {% endcomment %}
                                             <figcaption class="tm-color-primary text-center">{{ comment.user.username }}</figcaption>
                                         </figure>
 
@@ -143,11 +143,11 @@ https://templatemo.com/tm-553-xtra-blog
                                             <hr>
                                             <div class="tm-comment">
                                                 <figure class="tm-comment-figure">
-                                                    {% if reply.user.authorprofile.profile_image %}
-                                                        <img src="{{ reply.user.authorprofile.profile_image.url }}" width="50" height="50" alt="Image" class="mb-2 rounded-circle img-thumbnail">
-                                                    {% else %}
+                                                    {% comment %} {% if reply.user.get_profile_image %} {% endcomment %}
+                                                        <img src="{{ reply.user.get_profile_image }}" width="70" height="70" alt="Image" class="mb-2 rounded-circle img-thumbnail">
+                                                    {% comment %} {% else %}
                                                         <img src="/static/img/comment-2.jpg" alt="Image" class="mb-2 rounded-circle img-thumbnail">
-                                                    {% endif %}
+                                                    {% endif %} {% endcomment %}
                                                     <figcaption class="tm-color-primary text-center">{{ reply.user.username }}</figcaption>    
                                                 </figure>
                                                 <div >

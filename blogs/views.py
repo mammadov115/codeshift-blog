@@ -116,7 +116,6 @@ class PostDetailView(View):
                 content=content,
                 parent=parent_comment
             )
-            messages.success(request, "Your comment was added successfully!")
         else:
             messages.warning(request, "Comment cannot be empty.")
 
