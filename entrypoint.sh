@@ -3,7 +3,6 @@ set -e
 
 echo "Running migrations..."
 python manage.py migrate
-python manage.py create_initial_categories
 
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
@@ -11,6 +10,7 @@ python manage.py collectstatic --noinput
 
 python manage.py shell <<EOF
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 User = get_user_model()
 username = 'admin'
