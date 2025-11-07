@@ -173,7 +173,6 @@ class UserProfileView(LoginRequiredMixin, View):
 
             reader_profile.save()
 
-        messages.success(request, "Your profile information has been updated successfully.")
         return redirect("profile")
 
 

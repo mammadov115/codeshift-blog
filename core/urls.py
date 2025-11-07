@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve 
+from django.urls import re_path 
 
 
 urlpatterns = [
@@ -25,7 +27,14 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('blogs.urls')),
 
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    urlpatterns += [
+        re_path(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+]
