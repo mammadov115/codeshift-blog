@@ -76,13 +76,6 @@ The administrative backend allows superusers to manage all site content, users, 
 
 ---
 
-## 🛑 Important Note on Serving Media Files
-
-This setup uses a development-focused server (`runserver_plus`) for simplicity, and the configuration has been adjusted to manually serve media files (uploaded images) even when `DEBUG=False`.
-
-> For a production environment, this setup should be replaced with a robust WSGI server (like Gunicorn) and a dedicated web server (like Nginx) to handle static and media files securely and efficiently.
-
----
 
 Enjoy blogging!
 
