@@ -82,3 +82,39 @@ class RegisterViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("email", response.data)
         self.assertFalse(User.objects.filter(username="newuser").exists())
+
+    def test_author_profile_created_on_register(self):
+        """
+        When an author registers, AuthorProfile should be created automatically.
+        """
+        data = {
+            "username": "author_user",
+            "email": "author@example.com",
+            "password": "StrongPass123",
+            "confirm_password": "StrongPass123",
+            "role": "author"
+        }
+        response = self.client.post(self.register_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username="author_user")
+        self.assertTrue(hasattr(user, "authorprofile"))
+        self.assertFalse(hasattr(user, "readerprofile"))
+
+    def test_reader_profile_created_on_register(self):
+        """
+        When a reader registers, ReaderProfile should be created automatically.
+        """
+        data = {
+            "username": "reader_user",
+            "email": "reader@example.com",
+            "password": "StrongPass123",
+            "confirm_password": "StrongPass123",
+            "role": "reader"
+        }
+        response = self.client.post(self.register_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username="reader_user")
+        self.assertTrue(hasattr(user, "readerprofile"))
+        self.assertFalse(hasattr(user, "authorprofile"))

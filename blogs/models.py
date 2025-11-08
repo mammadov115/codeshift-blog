@@ -22,8 +22,6 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
-
-
 class Post(models.Model):
     """Core blog post model representing an article."""
 
@@ -92,7 +90,6 @@ class Post(models.Model):
         Return total number of comments including replies.
         """
         return self.comments.count()
-
 
 class Comment(models.Model):
     """Represents a comment made by a user on a post (supports nesting)."""

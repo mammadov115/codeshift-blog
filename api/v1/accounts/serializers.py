@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from accounts.models import AuthorProfile, ReaderProfile
 
 User = get_user_model()
 
@@ -67,14 +70,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-from django.contrib.auth import authenticate
-from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-
 class LoginSerializer(serializers.Serializer):
     """
     Serializer for user login using username and password.
@@ -110,3 +105,74 @@ class LoginSerializer(serializers.Serializer):
         attrs["user"] = user  # optional, if you want user info in view
 
         return attrs
+
+
+class AuthorProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for AuthorProfile model.
+    Includes nested user info and handles read-only fields like total_posts.
+    """
+
+    username = serializers.CharField(source="user.username", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    role = serializers.CharField(source="user.role", read_only=True)
+    profile_image_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = AuthorProfile
+        fields = [
+            "id",
+            "username",
+            "email",
+            "role",
+            "bio",
+            "website",
+            "profile_image",
+            "profile_image_url",
+            "verified",
+            "total_posts",
+        ]
+        read_only_fields = ["id", "username", "email", "role", "total_posts", "profile_image_url"]
+
+    def get_profile_image_url(self, obj):
+        """
+        Return the full URL of the author's profile image or a default image.
+        """
+        request = self.context.get("request")
+        if obj.profile_image:
+            return request.build_absolute_uri(obj.profile_image.url) if request else obj.profile_image.url
+        return "/static/images/default_profile.png"
+
+
+class ReaderProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for ReaderProfile model.
+    Includes nested user info and full profile image URL.
+    """
+
+    username = serializers.CharField(source="user.username", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    role = serializers.CharField(source="user.role", read_only=True)
+    profile_image_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = ReaderProfile
+        fields = [
+            "id",
+            "username",
+            "email",
+            "role",
+            "subscribed",
+            "profile_image",
+            "profile_image_url",
+        ]
+        read_only_fields = ["id", "username", "email", "role", "profile_image_url"]
+
+    def get_profile_image_url(self, obj):
+        """
+        Return full URL of the reader's profile image, or default if not provided.
+        """
+        request = self.context.get("request")
+        if obj.profile_image:
+            return request.build_absolute_uri(obj.profile_image.url) if request else obj.profile_image.url
+        return "/static/images/default_profile.png"
