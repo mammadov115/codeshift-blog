@@ -65,3 +65,48 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+from django.contrib.auth import authenticate
+from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login using username and password.
+    Returns JWT tokens if authentication is successful.
+    """
+
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(
+        write_only=True, style={"input_type": "password"}, required=True
+    )
+
+    access = serializers.CharField(read_only=True)
+    refresh = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        """
+        Validate user credentials and generate JWT tokens.
+        """
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if not user:
+                raise serializers.ValidationError("Invalid username or password.")
+        else:
+            raise serializers.ValidationError("Username and password are required.")
+
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+        attrs["refresh"] = str(refresh)
+        attrs["access"] = str(refresh.access_token)
+        attrs["user"] = user  # optional, if you want user info in view
+
+        return attrs
