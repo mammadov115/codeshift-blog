@@ -20,10 +20,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve 
 from django.urls import re_path 
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
+
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/', include('api.v1.urls')),
     path('', include('accounts.urls')),
     path('', include('blogs.urls')),
 

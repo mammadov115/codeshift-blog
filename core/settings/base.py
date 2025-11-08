@@ -50,7 +50,11 @@ APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'django_extensions'
+    'django_extensions',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    "drf_yasg",
 ]
 
 INSTALLED_APPS += APPS + THIRD_PARTY_APPS

@@ -181,7 +181,6 @@ class LogoutView(LoginRequiredMixin, View):
     Log out the currently authenticated user
     and redirect them to the login page.
     """
-    print("hello    ")
 
     def post(self, request, *args, **kwargs):
         """
