@@ -42,3 +42,32 @@ class IsVerifiedAuthor(permissions.BasePermission):
         # Ensure the user has an author profile and is verified.
         author_profile = getattr(request.user, "authorprofile", None)
         return author_profile is not None and author_profile.verified
+
+
+class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission:
+    - Anyone can read comments (SAFE_METHODS).
+    - Authenticated users can create comments.
+    - Only comment owner or admin can edit/delete.
+    """
+
+    def has_permission(self, request, view):
+        # Allow read-only access to everyone
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Only authenticated users can create or modify
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        # Allow read-only access for safe methods
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Allow admins full access
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+
+        # Allow comment owners to modify their own comments
+        return obj.user == request.user

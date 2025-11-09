@@ -1,7 +1,10 @@
 from rest_framework import generics
-from blogs.models import Category, Post
-from .serializers import CategorySerializer, PostSerializer
-from .permissions import IsAdminOrReadOnly, IsVerifiedAuthor, IsAuthorOrReadOnly
+from blogs.models import Category, Post, Comment
+from .serializers import CategorySerializer, PostSerializer, CommentSerializer
+from .permissions import (IsAdminOrReadOnly,
+                           IsVerifiedAuthor, 
+                            IsAuthorOrReadOnly,
+                             IsOwnerOrAdminOrReadOnly)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
@@ -44,3 +47,40 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthorOrReadOnly]
+
+
+class CommentListCreateView(generics.ListCreateAPIView):
+    """
+    Handles listing all comments for a specific post and creating new ones.
+    - Anyone can read comments.
+    - Authenticated users can add comments.
+    """
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    def get_queryset(self):
+        """
+        Return all comments for a specific post.
+        If 'post_id' is in the URL, filter by it.
+        """
+        post_id = self.kwargs.get("post_id")
+        return Comment.objects.filter(post_id=post_id, parent=None).select_related("user", "post")
+
+    def perform_create(self, serializer):
+        """
+        Automatically set the user and post when creating a comment.
+        """
+        post_id = self.kwargs.get("post_id")
+        serializer.save(user=self.request.user, post_id=post_id)
+
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Handles retrieving, updating, and deleting a specific comment.
+    - Read-only for everyone.
+    - Only owner or admin can modify/delete.
+    """
+    queryset = Comment.objects.all().select_related("user", "post")
+    serializer_class = CommentSerializer
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
+    

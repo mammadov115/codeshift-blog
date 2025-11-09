@@ -78,11 +78,13 @@ class LoginSerializer(serializers.Serializer):
 
     username = serializers.CharField(required=True)
     password = serializers.CharField(
-        write_only=True, style={"input_type": "password"}, required=True
+        write_only=True, required=True
     )
 
     access = serializers.CharField(read_only=True)
     refresh = serializers.CharField(read_only=True)
+
+    user_id = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
         """
@@ -103,6 +105,7 @@ class LoginSerializer(serializers.Serializer):
         attrs["refresh"] = str(refresh)
         attrs["access"] = str(refresh.access_token)
         attrs["user"] = user  # optional, if you want user info in view
+        attrs["user_id"] = user.id
 
         return attrs
 

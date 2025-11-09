@@ -3,7 +3,9 @@ from .views import (
     CategoryListCreateView, 
     CategoryRetrieveUpdateDestroyView,
     PostListCreateView,
-    PostDetailView
+    PostDetailView,
+    CommentListCreateView, 
+    CommentDetailView
     )
 
 urlpatterns = [
@@ -13,4 +15,8 @@ urlpatterns = [
     path("posts/", PostListCreateView.as_view(), name="post-list-create"),
     # Retrieve, update, or delete a specific post by its slug
     path("posts/<slug:slug>/", PostDetailView.as_view(), name="post-detail"),
+    # List all comments for a specific post or create a new one
+    path("posts/<int:post_id>/comments/", CommentListCreateView.as_view(), name="comment-list-create"),
+    # Retrieve, update, or delete a specific comment by its ID
+    path("comments/<int:pk>/", CommentDetailView.as_view(), name="comment-detail"),
 ]

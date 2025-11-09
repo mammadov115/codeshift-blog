@@ -8,8 +8,7 @@ from .permissions import IsAnonymousUser, IsAuthorUser, IsReaderUser
 from .serializers import (RegisterSerializer, 
                           LoginSerializer, 
                           AuthorProfileSerializer, 
-                          ReaderProfileSerializer
-                          )
+                          ReaderProfileSerializer)
 
 
 
@@ -24,6 +23,8 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [IsAnonymousUser]
+    swagger_tag = ["User Signup"]
+
 
     def create(self, request, *args, **kwargs):
         """
@@ -51,6 +52,7 @@ class RegisterView(generics.CreateAPIView):
             headers=headers
         )
 
+
 class LoginView(generics.GenericAPIView):
     """
     Generic API view for user login with JWT tokens.
@@ -59,6 +61,7 @@ class LoginView(generics.GenericAPIView):
 
     serializer_class = LoginSerializer
     permission_classes = [IsAnonymousUser]
+    swagger_tag = ["User Signup"]
 
     def post(self, request, *args, **kwargs):
         """
@@ -69,6 +72,7 @@ class LoginView(generics.GenericAPIView):
 
         user = serializer.validated_data["user"]
         return Response({
+            "id": serializer.validated_data["user_id"],
             "username": user.username,
             "email": user.email,
             "role": user.role,
@@ -77,6 +81,7 @@ class LoginView(generics.GenericAPIView):
             "profile_image": user.get_profile_image,
             "access": serializer.validated_data["access"],
             "refresh": serializer.validated_data["refresh"],
+
         }, status=status.HTTP_200_OK)
 
 

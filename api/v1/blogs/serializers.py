@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from blogs.models import Category, Post
+from blogs.models import Category, Post, Comment
 from api.v1.accounts.serializers import AuthorProfileSerializer
 
 
@@ -74,3 +74,52 @@ class PostSerializer(serializers.ModelSerializer):
         validated_data.pop("author", None)
         validated_data.pop("slug", None)
         return super().update(instance, validated_data)
+    
+
+class RecursiveCommentSerializer(serializers.Serializer):
+    """Recursively serialize nested replies."""
+    def to_representation(self, instance):
+        serializer = CommentSerializer(instance, context=self.context)
+        return serializer.data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Serializer for the Comment model with nested replies support."""
+
+    user = serializers.StringRelatedField(read_only=True)  # Displays the username
+    replies = RecursiveCommentSerializer(many=True, read_only=True)
+    post = serializers.PrimaryKeyRelatedField(read_only=True)
+    parent_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+
+    class Meta:
+        model = Comment
+        fields = [
+            "id",
+            "post",
+            "user",
+            "content",
+            "parent_id",
+            "replies",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "replies", "user"]
+
+    def create(self, validated_data):
+        """
+        Create a comment, assigning user and post from context.
+        This ensures cleaner request payloads.
+        """
+        request = self.context.get("request")
+        post = self.context.get("post")
+        # user = request.user if request else None
+
+        parent_id = validated_data.pop("parent_id", None)
+        parent = Comment.objects.get(id=parent_id) if parent_id else None
+
+        return Comment.objects.create(
+            post=post,
+            # user=user,
+            parent=parent,
+            **validated_data
+        )
