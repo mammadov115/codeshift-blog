@@ -114,7 +114,7 @@ HTTP 429 Too Many Requests
 
 * This ensures fair usage, protects the server from overload, and prevents spam (e.g., excessive comment posting).
 
-> You can configure throttling rates in `settings.py` under `REST_FRAMEWORK` → `DEFAULT_THROTTLE_RATES`.
+> You can configure throttling rates in `core/settings/base.py` under `REST_FRAMEWORK` → `DEFAULT_THROTTLE_RATES`.
 
 ---
 
