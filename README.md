@@ -95,15 +95,6 @@ The platform exposes a RESTful API for programmatic access:
 | `/api/v1/blogs/posts/`                        | `PostListCreateView`                | `post-list-create`     | List/Create posts               |
 | `/api/v1/blogs/posts/<int:post_id>/comments/` | `CommentListCreateView`             | `comment-list-create`  | List/Create comments for a post |
 | `/api/v1/blogs/posts/<slug:slug>/`            | `PostDetailView`                    | `post-detail`          | Retrieve/Update/Delete a post   |
-| `/contact/`                                   | `ContactView`                       | `contact`              | Contact form submission         |
-| `/create/`                                    | `PostCreateView`                    | `post-create`          | Create a new post               |
-| `/login/`                                     | `UserLoginView`                     | `login`                | Web login page                  |
-| `/logout/`                                    | `LogoutView`                        | `logout`               | Logout user                     |
-| `/media/<path>`                               | `django.views.static.serve`         | -                      | Serve media files               |
-| `/post-list/`                                 | `PostListView`                      | `post-list`            | List posts on web               |
-| `/profile/`                                   | `UserProfileView`                   | `profile`              | View logged-in user profile     |
-| `/redoc/`                                     | `drf_yasg.views.SchemaView`         | `schema-redoc`         | Redoc API docs                  |
-| `/signup/`                                    | `UserRegisterView`                  | `signup`               | Web registration page           |
 | `/swagger<format>/`                           | `drf_yasg.views.SchemaView`         | `schema-json`          | JSON schema endpoint            |
 
 ---
