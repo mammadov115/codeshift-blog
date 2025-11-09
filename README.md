@@ -76,6 +76,62 @@ The administrative backend allows superusers to manage all site content, users, 
 
 ---
 
+## 📝 API Endpoints
+
+The platform exposes a RESTful API for programmatic access:
+
+| Endpoint                                      | View                                | Name                   | Description                     |
+| --------------------------------------------- | ----------------------------------- | ---------------------- | ------------------------------- |
+| `/api/v1/`                                    | `drf_yasg.views.SchemaView`         | `schema-swagger-ui`    | Swagger UI schema               |
+| `/api/v1/accounts/authors/`                   | `AuthorProfileListView`             | `author-list`          | List all authors                |
+| `/api/v1/accounts/authors/<int:id>/`          | `AuthorProfileRetrieveUpdateView`   | `author-detail`        | Retrieve/Update author profile  |
+| `/api/v1/accounts/login/`                     | `LoginView`                         | `user-login`           | User login                      |
+| `/api/v1/accounts/readers/`                   | `ReaderProfileListView`             | `reader-list`          | List all readers                |
+| `/api/v1/accounts/readers/<int:id>/`          | `ReaderProfileRetrieveUpdateView`   | `reader-detail`        | Retrieve/Update reader profile  |
+| `/api/v1/accounts/register/`                  | `RegisterView`                      | `user-register`        | Register new user               |
+| `/api/v1/blogs/categories/`                   | `CategoryListCreateView`            | `category-list-create` | List/Create blog categories     |
+| `/api/v1/blogs/categories/<slug:slug>/`       | `CategoryRetrieveUpdateDestroyView` | `category-detail`      | Retrieve/Update/Delete category |
+| `/api/v1/blogs/comments/<int:pk>/`            | `CommentDetailView`                 | `comment-detail`       | Retrieve/Update/Delete comment  |
+| `/api/v1/blogs/posts/`                        | `PostListCreateView`                | `post-list-create`     | List/Create posts               |
+| `/api/v1/blogs/posts/<int:post_id>/comments/` | `CommentListCreateView`             | `comment-list-create`  | List/Create comments for a post |
+| `/api/v1/blogs/posts/<slug:slug>/`            | `PostDetailView`                    | `post-detail`          | Retrieve/Update/Delete a post   |
+| `/contact/`                                   | `ContactView`                       | `contact`              | Contact form submission         |
+| `/create/`                                    | `PostCreateView`                    | `post-create`          | Create a new post               |
+| `/login/`                                     | `UserLoginView`                     | `login`                | Web login page                  |
+| `/logout/`                                    | `LogoutView`                        | `logout`               | Logout user                     |
+| `/media/<path>`                               | `django.views.static.serve`         | -                      | Serve media files               |
+| `/post-list/`                                 | `PostListView`                      | `post-list`            | List posts on web               |
+| `/profile/`                                   | `UserProfileView`                   | `profile`              | View logged-in user profile     |
+| `/redoc/`                                     | `drf_yasg.views.SchemaView`         | `schema-redoc`         | Redoc API docs                  |
+| `/signup/`                                    | `UserRegisterView`                  | `signup`               | Web registration page           |
+| `/swagger<format>/`                           | `drf_yasg.views.SchemaView`         | `schema-json`          | JSON schema endpoint            |
+
+---
+
+## ⏱ Throttling & Rate Limiting
+
+To prevent abuse and excessive load, all API endpoints are **throttled**:
+
+* **Authenticated Users:** Limited to `100 requests/hour`
+* **Anonymous Users:** Limited to `20 requests/hour`
+
+Exceeded limits return:
+
+```
+HTTP 429 Too Many Requests
+```
+
+* This ensures fair usage, protects the server from overload, and prevents spam (e.g., excessive comment posting).
+
+> You can configure throttling rates in `settings.py` under `REST_FRAMEWORK` → `DEFAULT_THROTTLE_RATES`.
+
+---
+
+## 🔧 Notes
+
+* All API endpoints follow **RESTful conventions** and are fully documented via Swagger and Redoc.
+* Nested comments, post CRUD, and author-reader roles are fully integrated with throttling to ensure a stable, fair system.
+
 
 Enjoy blogging!
 
